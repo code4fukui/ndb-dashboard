@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>都道府県別NDBオープンデータダッシュボード</title>
+<link rel="apple-touch-icon" href="tabularmaps_japan.png"/>
+<meta property="og:image" content="tabularmaps_japan.png">
+<meta name="format-detection" content="telephone=no"/>
+<script type="module">
+import { CSV } from "https://js.sabae.cc/CSV.js";
+import { makeGrids } from "https://code4fukui.github.io/opendata-japan/makeGrids.js";
+import { cr } from "https://js.sabae.cc/cr.js";
+import { ArrayUtil } from "https://js.sabae.cc/ArrayUtil.js";
+
+const url = "https://code4fukui.github.io/ndb-opendata/data/09/001258403_0.csv";
+const data = await CSV.fetchJSON(url);
+console.log(data);
+const data2 = data.find(i => i.診療行為 == "糖尿病合併症管理料");
+console.log(data2);
+
+const url2 = "./population-japan.csv";
+const datap = await CSV.fetchJSON(url2);
+console.log(datap);
+
+const url_citiesjp = "https://code4fukui.github.io/localgovjp/localgovjp-utf8.csv"
+const cities = await CSV.fetchJSON(url_citiesjp)
+const getCityData = function(pref, city) {
+  for (const d of cities) {
+    if (d.pref == pref && d.city == city) {
+      return d
+    }
+  }
+  return null
+}
+
+const area = await CSV.fetchJSON("https://tabularmaps.github.io/areamap/tabularmaps_japan.csv")
+//checkTabularMaps(area, cities)
+
+const show = function(name) {
+  let tmapdata = area[0]
+  for (const d of area) {
+    if (d.name == name) {
+      tmapdata = d
+      break
+    }
+  }
+  back.style.display = tmapdata == area[0] ? "none" : "inline-block"
+  
+  const tmap = makeGrids(tmapdata.tabularmap)
+  tmapc.innerHTML = ""
+  tmapc.appendChild(tmap)
+  tmtitle.textContent = tmapdata.name_ja
+
+  for (const c of tmap.children) {
+    const name = c.textContent;
+    c.bkname = name;
+    if (name != "-") {
+      /*
+        const cities = opendatajp.filter(i => i.都道府県名 == name);
+        const res = cities.filter(i => i.状態 == "提出済");
+        const ratio = res.length / cities.length * 100;
+        const hasod = cities.filter(i => i[q3_hasopendata] == "取組んでいる");
+        const ratio2 = hasod.length / cities.length * 100;
+        
+        c.innerHTML += `<br><div class=ratio>
+          提出率${ratio.toFixed(1)}% ${res.length}/${cities.length}<br>
+          取組率${ratio2.toFixed(1)}% ${hasod.length}/${cities.length} 
+        </div>`;
+        //console.log(name);
+      */
+      const p = parseInt(datap.find(i => i.地域 == name)["2022年"]) * 1000;
+      const n = parseInt(data2[name]);
+      const ratio = (n / p * 10000).toFixed(2);
+      c.innerHTML += `<br>${n}人<br>${ratio}/万`;
+      c.style.backgroundColor = `hsl(20, 100%, ${100 - ratio * 5}%)`;
+    }
+  }
+}
+
+window.onhashchange = () => {
+  const hash = document.location.hash;
+  if (hash.length > 1) {
+    show(hash.substring(1));
+  } else {
+    show("Japan");
+  }
+};
+window.onhashchange()
+
+back.onclick = () => {
+  document.location.hash = ""
+};
+
+const showContent = (json) => {
+  const tbl = cr("table");
+  for (const name in json) {
+    const tr = cr("tr", tbl);
+    cr("th", tr).textContent = name;
+    cr("td", tr).textContent = json[name];
+  }
+  divcontent.innerHTML = "";
+  divcontent.appendChild(tbl);
+};
+
+</script>
+<style>
+body {
+  font-family: sans-serif;
+  text-align: center;
+}
+h1 {
+  font-size: 3vw;
+  margin-top: 2vw;
+}
+/* tabularmaps */
+#tmapc span {
+  font-size: min(2.0vmax, 16px);
+  align-items: center;
+  justify-content: center;
+  border-radius: .5vmax;
+  border: .1vmax solid #333;
+  padding: .2vmax .2vmax;
+  margin: .2vmax;
+}
+/* other */
+#tmtitle {
+  color: black;
+}
+#back {
+  display: none;
+  margin: 1vw;
+  padding: .5vw;
+}
+/* credit */
+.credit {
+  margin: 20px;
+  text-align: center;
+  font-size: 80%;
+}
+.credit a {
+  color: #666 !important;
+}
+/* content */
+table {
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid black;
+  padding: .2em;
+  text-align: left;
+}
+.ratio {
+  font-size: 75%;
+}
+</style>
+</head>
+<body>
+
+<h1>都道府県別NDBオープンデータダッシュボード（<span id=tmtitle>日本</span>）</h1>
+<h2>糖尿病合併症管理料 患者数</h2>
+
+<div id="tmapc"></div>
+<button id="back">もどる</button>
+<div id="divcontent"></div>
+
+<div class="credit">
+APP: <a href=https://github.com/code4fukui/ndb-dashboard/>src on GitHub</a><br>
+LAYOUT: <a href=tabularmaps_japan.csv>TabularMaps Japan - 日本カラム地図 CSV</a> CC0 <a href=https://github.com/tabularmaps/hq>カラム地図 / TabularMaps on Github</a><br>
+DATA: <a href=https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000177182.html>【NDB】NDBオープンデータ｜厚生労働省</a> → <a href=https://github.com/code4fukui/ndb-opendata/>NDBオープンデータ</a><br>
+</div>
+
+</body>
+</html>
