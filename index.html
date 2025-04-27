@@ -3,6 +3,22 @@
 <link rel="apple-touch-icon" href="tabularmaps_japan.png"/>
 <meta property="og:image" content="tabularmaps_japan.png">
 <meta name="format-detection" content="telephone=no"/>
+</head>
+<body>
+
+<h1>都道府県別NDBオープンデータダッシュボード（<span id=tmtitle>日本</span>）</h1>
+<h2>糖尿病合併症管理料 患者数</h2>
+
+<div id="tmapc"></div>
+<button id="back">もどる</button>
+<div id="divcontent"></div>
+
+<div class="credit">
+APP: <a href=https://github.com/code4fukui/ndb-dashboard/>src on GitHub</a><br>
+LAYOUT: <a href=tabularmaps_japan.csv>TabularMaps Japan - 日本カラム地図 CSV</a> CC0 <a href=https://github.com/tabularmaps/hq>カラム地図 / TabularMaps on Github</a><br>
+DATA: <a href=https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000177182.html>【NDB】NDBオープンデータ｜厚生労働省</a> → <a href=https://github.com/code4fukui/ndb-opendata/>NDBオープンデータ</a><br>
+</div>
+
 <script type="module">
 import { CSV } from "https://js.sabae.cc/CSV.js";
 import { makeGrids } from "https://code4fukui.github.io/opendata-japan/makeGrids.js";
@@ -150,21 +166,6 @@ th, td {
   font-size: 75%;
 }
 </style>
-</head>
-<body>
-
-<h1>都道府県別NDBオープンデータダッシュボード（<span id=tmtitle>日本</span>）</h1>
-<h2>糖尿病合併症管理料 患者数</h2>
-
-<div id="tmapc"></div>
-<button id="back">もどる</button>
-<div id="divcontent"></div>
-
-<div class="credit">
-APP: <a href=https://github.com/code4fukui/ndb-dashboard/>src on GitHub</a><br>
-LAYOUT: <a href=tabularmaps_japan.csv>TabularMaps Japan - 日本カラム地図 CSV</a> CC0 <a href=https://github.com/tabularmaps/hq>カラム地図 / TabularMaps on Github</a><br>
-DATA: <a href=https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000177182.html>【NDB】NDBオープンデータ｜厚生労働省</a> → <a href=https://github.com/code4fukui/ndb-opendata/>NDBオープンデータ</a><br>
-</div>
 
 </body>
 </html>
