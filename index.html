@@ -108,6 +108,8 @@ const showContentRanking = (title, data) => {
 };
 
 const show = function(name) {
+  location.hash = encodeURIComponent(seltype.value);
+  
   const data2 = data.find(i => i.診療行為 == seltype.value);
   console.log(data2);
 
@@ -165,10 +167,10 @@ seltype.oninput = () => show("Japan");
 window.onhashchange = () => {
   const hash = document.location.hash;
   if (hash.length > 1) {
-    show(hash.substring(1));
-  } else {
-    show("Japan");
+    //show(hash.substring(1));
+    seltype.value = decodeURIComponent(hash.substring(1));
   }
+  show("Japan");
 };
 window.onhashchange()
 
